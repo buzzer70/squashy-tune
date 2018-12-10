@@ -1,0 +1,11 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/MusicSquash/bin
+/MusicSquash/obj
+/MusicSquash/libmp3lame.32.dll
+/MusicSquash/libmp3lame.64.dll
+/packages
+/MusicSquash/MusicSquash.csproj.user
