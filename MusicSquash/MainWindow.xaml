@@ -6,21 +6,58 @@
         xmlns:local="clr-namespace:MusicSquash"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-        Title="Wav to Mp3 File Compression Utility" Height="400" Width="525" ResizeMode="NoResize">
-  <Grid>
-    <Label x:Name="label" Content="Music Compression" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="24" Width="517" BorderBrush="Black" Margin="0,0,0,0" Background="#FF00D7FF">
-      <Label.Foreground>
-        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightLightColorKey}}"/>
-      </Label.Foreground>
-    </Label>
-    <Label x:Name="label1" Content="1. Select Music Folder" HorizontalAlignment="Left" Margin="24,56,0,0" VerticalAlignment="Top" FontSize="18"/>
-    <Label x:Name="label2" Content="2. Select Musician" HorizontalAlignment="Left" Margin="24,130,0,0" VerticalAlignment="Top" FontSize="18"/>
-    <Button x:Name="BrowseButton" Content="Change" HorizontalAlignment="Left" Margin="286,56,0,0" VerticalAlignment="Top" FontSize="18" Width="114" Click="BrowseButton_Click" Height="34"/>
-    <ListBox x:Name="FolderlistBox" HorizontalAlignment="Left" Height="95" Margin="286,130,0,0" VerticalAlignment="Top" Width="214" SelectionChanged="FolderlistBox_SelectionChanged"/>
-    <Label x:Name="label2_Copy" Content="3. Compress Wav files to Mp3" HorizontalAlignment="Left" Margin="24,250,0,0" VerticalAlignment="Top" FontSize="18"/>
-    <Button x:Name="CompressButton" FontSize="18" Content="Compress files" HorizontalAlignment="Left" Margin="286,250,0,0" VerticalAlignment="Top" Width="214" Height="34" Click="CompressButton_Click" IsEnabled="False"/>
-    <Label x:Name="StatusLabel" Content="Label" HorizontalAlignment="Left" Margin="35,325,0,0" FontSize="18" VerticalAlignment="Top"/>
-    <Label x:Name="MuiscFolderLabel" Content="Label" HorizontalAlignment="Left" Margin="35,95,0,0" VerticalAlignment="Top" RenderTransformOrigin="-6.342,0"/>
+        Title="Wav to Mp3 File Compression Utility" Height="600" Width="550" ResizeMode="NoResize">
+    <Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="240"/>
+                <ColumnDefinition Width="200*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="100*"/>
+                <RowDefinition Height="70"/>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="70"/>
 
-  </Grid>
+            </Grid.RowDefinitions>
+            <Label x:Name="label" Grid.Row="0" Content="Music Compression" 
+                   HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="24" 
+                   Grid.ColumnSpan="2" BorderBrush="Black" Margin="0,0,0,0" Background="#FF00D7FF" Height="70" Width="544">
+                <Label.Foreground>
+                    <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightLightColorKey}}"/>
+                </Label.Foreground>
+            </Label>
+
+            <Label Grid.Column="0" Padding="5,10,0,0" Grid.Row="1" Margin="10,0,0,0" x:Name="label2" Content="Select Musicians" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="18" />
+
+            <!--<Button x:Name="BrowseButton" Grid.Column="0" Grid.Row="5" Content="Change" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Width="114" Click="BrowseButton_Click" Height="34"/>-->
+
+            <ListBox Grid.Column="1" SelectionMode="Multiple" Grid.Row="1" Background="AliceBlue" Margin="10,10,10,10" x:Name="FolderlistBox" SelectionChanged="FolderlistBox_SelectionChanged"/>
+            <Label Grid.Column="0" VerticalAlignment="Center" Margin="10,0,0,0" Grid.Row="2" x:Name="label2_Copy" Content="Compress Wav files to Mp3" FontSize="18"/>
+            <Button Grid.Column="1" Grid.Row="2"  x:Name="CompressButton" FontSize="18" Content="Compress files"  Width="214" Height="34" Click="CompressButton_Click" IsEnabled="False" HorizontalAlignment="Right" Margin="10,10,10,10"/>
+   
+            <Grid Margin="10,0,10,0" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="3" >
+                <ProgressBar x:Name="CompressProgress"  Value="0" Margin="0,0,0,0"  Background="WhiteSmoke" />
+                <TextBlock x:Name="CompressionStatus" FontSize="14"  Text="" 
+                     Grid.Column="0" Foreground="Blue" VerticalAlignment="Center" Margin="10,0,0,0"  />
+            </Grid>
+            <StackPanel Margin="10,0,0,0" Grid.Column="0" Grid.Row="4"  >
+            <Label x:Name="MuiscFolderLabel" Content="Label"  />
+                <Button Name="FolderChange" Click="FolderChange_Click">
+                    <Button.Template>
+                        <ControlTemplate TargetType="{x:Type Button}">
+                            <Label Content="change" Foreground="Blue"  />
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+            <Button Grid.Column="1" Grid.Row="4"  x:Name="CloseButton" FontSize="18" Content="Close"  Width="100" HorizontalAlignment="Right" Margin="10,10,10,10"  Height="34" Click="CloseButton_Click"  />
+
+
+
+        </Grid>
+
+
+    </Grid>
 </Window>

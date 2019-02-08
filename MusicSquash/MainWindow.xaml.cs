@@ -1,21 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using Microsoft.WindowsAPICodePack.Dialogs;
-using System.IO;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
 using NAudio.Lame;
 using NAudio.Wave;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace MusicSquash
 {
@@ -30,10 +22,11 @@ namespace MusicSquash
     {
       InitializeComponent();
 
-      StatusLabel.Content = "";
-      mMusicFiles = new List<string>();
+      CompressionStatus.Text = "";
+      CompressProgress.Value = 0;
+      //mMusicFiles = new List<string>();
       mSettings = MusicSquashSettings.Load();
-      mCompressedFolder = "";
+      //m//CompressedFolder = "";
 
       MuiscFolderLabel.Content = "";
       if (mSettings.MusicFolder != "")
@@ -50,18 +43,31 @@ namespace MusicSquash
 
       }
 
+      CompressWorker = new BackgroundWorker
+      {
+        WorkerReportsProgress = true
+      };
+      CompressWorker.DoWork += CompressWorker_DoWork;
+      CompressWorker.ProgressChanged += CompressWorker_ProgressChanged;
+      CompressWorker.RunWorkerCompleted += CompressWorker_RunWorkerCompleted;
+
+
     }
 
+    private int mTotalFiles;
     private DirectoryInfo mRootFolder;
-    private List<string> mMusicFiles;
+    // private List<string> mMusicFiles;
     private MusicSquashSettings mSettings;
-    private string mCompressedFolder;
+    //private string mCompressedFolder;
+    private System.ComponentModel.BackgroundWorker CompressWorker;
 
 
-    private void BrowseButton_Click(object sender, RoutedEventArgs e)
+    private void FolderChange_Click(object sender, RoutedEventArgs e)
     {
-      var dialog = new CommonOpenFileDialog();
-      dialog.IsFolderPicker = true;
+      var dialog = new CommonOpenFileDialog
+      {
+        IsFolderPicker = true
+      };
 
       //check settings save
       if (mSettings.MusicFolder != "")
@@ -97,7 +103,7 @@ namespace MusicSquash
         {
           FolderlistBox.Items.Add(ms.Name);
         }
-         
+
       }
       else
       {
@@ -108,32 +114,68 @@ namespace MusicSquash
 
     private void CompressButton_Click(object sender, RoutedEventArgs e)
     {
-      if (mMusicFiles.Count() > 0)
+           
+
+      //needs to work with multiple folders
+
+      //Get folders selected
+
+      var folders = FolderlistBox.SelectedItems;
+      List<string> wavFiles = new List<string>();
+      foreach (var folder in folders)
       {
-        if (MessageBox.Show(string.Format("Converting {0} Wav file(s).\nAre You Sure?", mMusicFiles.Count()), "Confirm Compression",
+        DirectoryInfo sourceFolder = new DirectoryInfo(string.Format(@"{0}\{1}", mRootFolder.FullName, folder));
+        wavFiles.AddRange(Directory.GetFiles(sourceFolder.FullName, "*.wav").ToList());
+      }
+
+      mTotalFiles = wavFiles.Count;
+
+      if (mTotalFiles > 0)
+      {
+        if (MessageBox.Show(string.Format("Converting {0} Wav file(s).\nAre You Sure?", mTotalFiles), "Confirm Compression",
           MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
         {
-          ConvertFiles();
+          //disable btns
+          CompressButton.IsEnabled = false;
+          CloseButton.IsEnabled = false;
+
+          CompressWorker.RunWorkerAsync(wavFiles);
         }
+
+
+
       }
     }
 
+    private void CompressWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+    {
+      MessageBox.Show("Complete", "Compression Status", MessageBoxButton.OK, MessageBoxImage.Information);
 
+      //enable btns
+      CompressionStatus.Text = "";
+      CompressProgress.Value = 0;
+      CompressButton.IsEnabled = true;
+      CloseButton.IsEnabled = true;
+
+    }
+
+    private void CompressWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+    {
+      double progress100 = e.ProgressPercentage * 100 / mTotalFiles ;
+      CompressionStatus.Text = string.Format("Processing file {0} out of {1} ({2}%)", e.ProgressPercentage, mTotalFiles, progress100);
+      CompressProgress.Value = progress100;
+    }
+
+
+    private void CompressWorker_DoWork(object sender, DoWorkEventArgs e)
+    {
+      ConvertFiles((List<string>)e.Argument);
+    }
 
     private void FolderlistBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
       if (FolderlistBox.SelectedIndex > -1)
       {
-        string name = FolderlistBox.SelectedValue.ToString();
-        string musicfolder = string.Format(@"{0}\{1}", mRootFolder.FullName, name);
-        string[] wavfiles = Directory.GetFiles(musicfolder, "*.wav");
-        mMusicFiles.Clear();
-          mMusicFiles.AddRange(wavfiles);
-  
-        StatusLabel.Content = string.Format("{0} Wav file(s) found for conversion.", wavfiles.Count());
-        //get info for first file to create compression folder
-
-        mCompressedFolder = string.Format(@"{0}\compressed-{1}", mRootFolder.FullName, name);
         CompressButton.IsEnabled = true;
       }
       else
@@ -143,24 +185,34 @@ namespace MusicSquash
 
     }
 
-    private void ConvertFiles()
+    private void ConvertFiles(List<string> wavFiles)
     {
 
-      
-      if (Directory.Exists(mCompressedFolder) == false)
+      //a list of files that may or may not exist.
+      //create the 
+      int i = 0;
+
+      foreach (string wavFile in wavFiles)
       {
-        Directory.CreateDirectory(mCompressedFolder);
+        FileInfo wav = new FileInfo(wavFile);
+        DirectoryInfo dir = wav.Directory;
+
+        //create folder if neccessary
+        string compressedFolder = string.Format(@"{0}\compressed-{1}", dir.Parent.FullName, dir.Name);
+        if (Directory.Exists(compressedFolder) == false)
+        {
+          Directory.CreateDirectory(compressedFolder);
+        }
+
+        //convert file
+        string mp3DestinationName = string.Format(@"{0}\{1}", compressedFolder, wav.Name.Replace(".wav", ".mp3"));
+        if (!File.Exists(mp3DestinationName))
+        { 
+        ConvertFile(wav.FullName, mp3DestinationName);
+        }
+        CompressWorker.ReportProgress(++i);
       }
 
-      foreach (var item in mMusicFiles)
-      {
-        FileInfo sourcefi = new FileInfo(item);
-
-        string mp3DestinationName = string.Format(@"{0}\{1}", mCompressedFolder, sourcefi.Name.Replace(".wav", ".mp3"));
-        ConvertFile(item, mp3DestinationName);
-      }
-
-      MessageBox.Show("Complete", "Compression Status", MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
 
@@ -179,7 +231,7 @@ namespace MusicSquash
       using (var retMs = new MemoryStream())
       using (var ms = new MemoryStream(wavFile))
       using (var rdr = new WaveFileReader(ms))
-      using (var wtr = new LameMP3FileWriter(retMs, rdr.WaveFormat, LAMEPreset.ABR_256))
+      using (var wtr = new LameMP3FileWriter(retMs, rdr.WaveFormat, LAMEPreset.ABR_320))
       {
         rdr.CopyTo(wtr);
         wtr.Flush();
@@ -187,6 +239,11 @@ namespace MusicSquash
       }
 
 
+    }
+
+    private void CloseButton_Click(object sender, RoutedEventArgs e)
+    {
+      this.Close();
     }
 
 
