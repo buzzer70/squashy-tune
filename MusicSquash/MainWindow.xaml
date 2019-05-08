@@ -18,6 +18,7 @@
                 <RowDefinition Height="100*"/>
                 <RowDefinition Height="70"/>
                 <RowDefinition Height="40"/>
+                <RowDefinition Height="30"/>
                 <RowDefinition Height="70"/>
 
             </Grid.RowDefinitions>
@@ -42,8 +43,10 @@
                 <TextBlock x:Name="CompressionStatus" FontSize="14"  Text="" 
                      Grid.Column="0" Foreground="Blue" VerticalAlignment="Center" Margin="10,0,0,0"  />
             </Grid>
-            <StackPanel Margin="10,0,0,0" Grid.Column="0" Grid.Row="4"  >
-            <Label x:Name="MuiscFolderLabel" Content="Label"  />
+            <StackPanel Margin="10,0,0,0" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4"  > 
+                <Label x:Name="MuiscFolderLabel"  Content="Label is quite long, how long can we display, not sure, can we have ellipses too? haha who knows what we can do in wpf"  />
+            </StackPanel>
+            <StackPanel Margin="10,0,0,0" Grid.Column="0" Grid.Row="5"  >
                 <Button Name="FolderChange" Click="FolderChange_Click">
                     <Button.Template>
                         <ControlTemplate TargetType="{x:Type Button}">
@@ -52,7 +55,7 @@
                     </Button.Template>
                 </Button>
             </StackPanel>
-            <Button Grid.Column="1" Grid.Row="4"  x:Name="CloseButton" FontSize="18" Content="Close"  Width="100" HorizontalAlignment="Right" Margin="10,10,10,10"  Height="34" Click="CloseButton_Click"  />
+            <Button Grid.Column="1" Grid.Row="5"  x:Name="CloseButton" FontSize="18" Content="Close"  Width="100" HorizontalAlignment="Right" Margin="10,10,10,10"  Height="34" Click="CloseButton_Click"  />
 
 
 
