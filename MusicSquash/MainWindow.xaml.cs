@@ -205,7 +205,7 @@ namespace MusicSquash
         }
 
         //convert file
-        string mp3DestinationName = string.Format(@"{0}\{1}", compressedFolder, wav.Name.Replace(".wav", ".mp3"));
+        string mp3DestinationName = string.Format(@"{0}\{1}", compressedFolder, wav.Name.Replace(wav.Extension, ".mp3"));
         if (!File.Exists(mp3DestinationName))
         { 
         ConvertFile(wav.FullName, mp3DestinationName);
