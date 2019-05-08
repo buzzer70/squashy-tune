@@ -29,12 +29,36 @@
                     <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.ControlLightLightColorKey}}"/>
                 </Label.Foreground>
             </Label>
-
-            <Label Grid.Column="0" Padding="5,10,0,0" Grid.Row="1" Margin="10,0,0,0" x:Name="label2" Content="Select Musicians" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="18" />
-
+            <StackPanel Grid.Column="0" Grid.Row="1">
+            <Label x:Name="label2" Content="Select Musicians" HorizontalAlignment="Left"  VerticalAlignment="Top" FontSize="18" />
+            
+            </StackPanel>
             <!--<Button x:Name="BrowseButton" Grid.Column="0" Grid.Row="5" Content="Change" HorizontalAlignment="Left" VerticalAlignment="Top" FontSize="18" Width="114" Click="BrowseButton_Click" Height="34"/>-->
+            <StackPanel Grid.Column="1" Grid.Row="1">
+                <ListBox  SelectionMode="Multiple"  
+                     Background="AliceBlue"   x:Name="FolderlistBox"  
+                     SelectionChanged="FolderlistBox_SelectionChanged" Height="265">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True" >
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Setter Property="Foreground" Value="Black" />
+                                </Trigger>
+                            </Style.Triggers>
+                            <Style.Resources>
+                                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
+                            </Style.Resources>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0" >
 
-            <ListBox Grid.Column="1" SelectionMode="Multiple" Grid.Row="1" Background="AliceBlue" Margin="10,10,10,10" x:Name="FolderlistBox" SelectionChanged="FolderlistBox_SelectionChanged"/>
+                    <Button Content="Select All" x:Name="SelectAllButton" Height="34" Width="100" HorizontalAlignment="left" Click="SelectAllButton_Click"  ></Button>
+                <Button Content="Clear All" x:Name="ClearAllButton"  Height="34" Width="100" HorizontalAlignment="Left" Click="ClearAllButton_Click" Margin="10,0,0,0"  ></Button>
+                </StackPanel>
+            </StackPanel>
             <Label Grid.Column="0" VerticalAlignment="Center" Margin="10,0,0,0" Grid.Row="2" x:Name="label2_Copy" Content="Compress Wav files to Mp3" FontSize="18"/>
             <Button Grid.Column="1" Grid.Row="2"  x:Name="CompressButton" FontSize="18" Content="Compress files"  Width="214" Height="34" Click="CompressButton_Click" IsEnabled="False" HorizontalAlignment="Right" Margin="10,10,10,10"/>
    

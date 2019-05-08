@@ -138,7 +138,10 @@ namespace MusicSquash
           //disable btns
           CompressButton.IsEnabled = false;
           CloseButton.IsEnabled = false;
-
+          FolderlistBox.IsEnabled = false;
+          FolderChange.IsEnabled = false;
+          SelectAllButton.IsEnabled = false;
+          ClearAllButton.IsEnabled = false;
           CompressWorker.RunWorkerAsync(wavFiles);
         }
 
@@ -156,6 +159,10 @@ namespace MusicSquash
       CompressProgress.Value = 0;
       CompressButton.IsEnabled = true;
       CloseButton.IsEnabled = true;
+      FolderlistBox.IsEnabled =true;
+      FolderChange.IsEnabled = true;
+      SelectAllButton.IsEnabled = true;
+      ClearAllButton.IsEnabled = true;
 
     }
 
@@ -246,6 +253,14 @@ namespace MusicSquash
       this.Close();
     }
 
+    private void SelectAllButton_Click(object sender, RoutedEventArgs e)
+    {
+      FolderlistBox.SelectAll();
+    }
 
+    private void ClearAllButton_Click(object sender, RoutedEventArgs e)
+    {
+      FolderlistBox.SelectedItems.Clear();
+    }
   }
 }
